@@ -1,1 +1,0 @@
-postgres_dsn: "host=79.104.55.66 port=7002 user=user5 password=muLbn dbname=hr-test sslmode=disable"
