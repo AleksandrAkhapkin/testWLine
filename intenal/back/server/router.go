@@ -12,5 +12,8 @@ func NewRouter(h *handlers.Handlers) *mux.Router {
 
 	router.Methods(http.MethodGet).Path("/ping").HandlerFunc(h.Ping)
 
+	//получение данных
+	router.Methods(http.MethodGet).Path("/get_data").HandlerFunc(h.GetData)
+
 	return router
 }
