@@ -9,11 +9,12 @@ import (
 )
 
 type Service struct {
-	p        *postgres.Postgres
-	id       int32
-	lastData string
+	p        *postgres.Postgres //база
+	id       int32              //индетификатор текущего сервера
+	lastData string             //
 }
 
+//инициализация нового сервиса
 func NewService(pq *postgres.Postgres) *Service {
 
 	return &Service{
