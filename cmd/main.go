@@ -67,7 +67,7 @@ func main() {
 		os.Exit(0)
 	}()
 
-	//go srv.StartRewrite()
+	go srv.StartService()
 
 	server.StartServer(handls, *port)
 }
