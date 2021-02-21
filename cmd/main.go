@@ -8,6 +8,7 @@ import (
 	"github.com/AleksandrAkhapkin/testWLine/intenal/back/service"
 	"github.com/AleksandrAkhapkin/testWLine/intenal/clients/postgres"
 	"github.com/AleksandrAkhapkin/testWLine/intenal/types/config"
+	"github.com/AleksandrAkhapkin/testWLine/logger"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 	"log"
@@ -17,7 +18,8 @@ import (
 )
 
 var startMessage = `Перед запуском программы необходимо указать подключение к базе в config/config.yaml
-Помимо этого, вы можете использовать флаг --port что бы указать порт для запуска в формате ":8080"`
+Помимо этого, вы можете использовать флаг --port что бы указать порт для запуска в формате ":8080"
+`
 
 func main() {
 	fmt.Println(startMessage)
@@ -32,17 +34,17 @@ func main() {
 
 	cnfFile, err := os.Open(*configPath)
 	if err != nil {
-		log.Fatal(errors.Wrap(err, "err with os.Open"))
+		logger.LogFatal(errors.Wrap(err, "err with os.Open"))
 	}
 
 	cnf := config.Config{}
 	if err := yaml.NewDecoder(cnfFile).Decode(&cnf); err != nil {
-		log.Fatal(errors.Wrap(err, "err with Decode config"))
+		logger.LogFatal(errors.Wrap(err, "err with Decode config"))
 	}
 
 	pq, err := postgres.NewPostgres(cnf.PostgresDsn)
 	if err != nil {
-		log.Fatal(errors.Wrap(err, "err with NewPostgres"))
+		logger.LogFatal(errors.Wrap(err, "err with NewPostgres"))
 	}
 
 	srv := service.NewService(pq)
@@ -60,7 +62,7 @@ func main() {
 		_ = <-sigChan
 		log.Println("Finish service")
 		if err := pq.Close(); err != nil {
-			log.Fatal(err)
+			logger.LogFatal(err)
 		}
 		os.Exit(0)
 	}()
