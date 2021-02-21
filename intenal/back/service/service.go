@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 	"github.com/AleksandrAkhapkin/testWLine/intenal/clients/postgres"
-	"github.com/AleksandrAkhapkin/testWLine/logger"
+	"github.com/AleksandrAkhapkin/testWLine/pkg/logger"
 	"github.com/pkg/errors"
 	"time"
 )
@@ -11,7 +11,7 @@ import (
 type Service struct {
 	p        *postgres.Postgres //база
 	id       int32              //индетификатор текущего сервера
-	lastData string             //
+	lastData string
 }
 
 //инициализация нового сервиса
@@ -30,37 +30,22 @@ func (s *Service) StartService() {
 	//Инициализируем в базе новую строчку которая отвечает за текущий сервер
 	s.id, err = s.p.InsertNewServerID()
 	if err != nil {
-		logger.LogError(errors.Wrap(err, "err in StartService in pq InsertNewServerID"))
-		return
+		logger.LogFatal(errors.Wrap(err, "err in StartService in pq InsertNewServerID"))
 	}
-	fmt.Printf("Индефикатор запускаемого сервера: %d", s.id)
-
-	ch := make(chan struct{})
-	go s.updateData(ch)
-	go func() {
-		for {
-			// в паралелль запускаем бесконечный цикл вычитывания канала
-			_ = <-ch
-			logger.LogInfo("restart checkLog")
-			go s.updateData(ch)
-			//если мы вычитали канал - значит была ошибка и надо запустить функцию заново
-		}
-	}()
-}
-
-//раз в 30 секунд получает данные из таблицы и обновляет данные в s.data
-func (s *Service) updateData(ch chan struct{}) {
+	fmt.Printf("Индефикатор запускаемого сервера: %d\n", s.id)
 
 	//используется тайм тикер, а не тайм слип, так как слип накапливает время выполнения самого процесса
 	tt := time.NewTicker(30 * time.Second)
 	for {
 		data, err := s.p.GetJSDataByID(s.id)
 		if err != nil {
-			logger.LogError(errors.Wrap(err, "err in service updateData in pq GetJSDataByID "))
-			ch <- struct{}{}
-			return
+			logger.LogFatal(errors.Wrap(err, "err in service updateData in pq GetJSDataByID "))
 		}
 		s.lastData = data
 		_ = <-tt.C
 	}
+}
+
+func (s *Service) GetData() string {
+	return s.lastData
 }
