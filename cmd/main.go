@@ -8,7 +8,7 @@ import (
 	"github.com/AleksandrAkhapkin/testWLine/intenal/back/service"
 	"github.com/AleksandrAkhapkin/testWLine/intenal/clients/postgres"
 	"github.com/AleksandrAkhapkin/testWLine/intenal/types/config"
-	"github.com/AleksandrAkhapkin/testWLine/logger"
+	"github.com/AleksandrAkhapkin/testWLine/pkg/logger"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 	"log"
