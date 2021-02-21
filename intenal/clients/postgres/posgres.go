@@ -31,7 +31,7 @@ func (p *Postgres) Close() error {
 func (p *Postgres) InsertNewServerID() (int32, error) {
 
 	var id int32
-	err := p.db.QueryRow("INSERT INTO server_data (js_data) VALUES ($1), RETURNING id", "").Scan(&id)
+	err := p.db.QueryRow("INSERT INTO server_data (js_data) VALUES ($1) RETURNING id", "").Scan(&id)
 	if err != nil {
 		return 0, err
 	}
